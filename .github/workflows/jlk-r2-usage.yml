@@ -1,0 +1,24 @@
+name: JLK R2 usage warning
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/jlk-r2-usage.yml', 'scripts/jlk-r2-usage.py']
+permissions:
+  contents: read
+jobs:
+  check:
+    if: github.repository == 'kane21014/open-seo'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check R2 Standard usage
+        env:
+          CF_TOKEN: ${{ secrets.JLK_R2_ANALYTICS_TOKEN || secrets.JLK_CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: python3 scripts/jlk-r2-usage.py
